@@ -36,6 +36,8 @@ typedef void(^ActionMultipleStringCancelBlock)(ActionSheetMultipleStringPicker *
 
 @interface ActionSheetMultipleStringPicker : AbstractActionSheetPicker <UIPickerViewDelegate, UIPickerViewDataSource>
 
+@property (nonatomic,strong) NSArray *data; //Array of string arrays :)
+
 /**
  *  Create and display an action sheet picker.
  *
