@@ -31,7 +31,6 @@
 #import "ActionSheetMultipleStringPicker.h"
 
 @interface ActionSheetMultipleStringPicker()
-@property (nonatomic,strong) NSArray *data; //Array of string arrays :)
 @property (nonatomic,strong) NSArray *initialSelection;
 @end
 
