@@ -15,6 +15,7 @@ static const enum UIViewAnimationOptions options = UIViewAnimationOptionCurveEas
 @interface SWActionSheetVC : UIViewController
 
 @property (nonatomic, retain) SWActionSheet *actionSheet;
+@property (nonatomic) BOOL presentWithAnimation;
 
 @end
 
@@ -47,7 +48,9 @@ static const enum UIViewAnimationOptions options = UIViewAnimationOptionCurveEas
     // Actions
     void (^actions)() = ^{
         self.center = fadeOutToPoint;
-        self.backgroundColor = [UIColor colorWithWhite:0.f alpha:0.0f];
+        if (self.showBg) {
+            self.backgroundColor = [UIColor colorWithWhite:0.f alpha:0.0f];
+        }
     };
     void (^completion)(BOOL) = ^(BOOL finished) {
     //    if (![appWindow isKeyWindow])
@@ -87,10 +90,11 @@ static const enum UIViewAnimationOptions options = UIViewAnimationOptionCurveEas
     else
     {
         return SWActionSheetWindow = ({
+            SWActionSheetVC *actionSheetVC = [SWActionSheetVC new];
             UIWindow *window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
             window.windowLevel        = UIWindowLevelAlert;
             window.backgroundColor    = [UIColor clearColor];
-            window.rootViewController = [SWActionSheetVC new];
+            window.rootViewController = actionSheetVC;
             window;
         });
     }
@@ -105,8 +109,12 @@ static const enum UIViewAnimationOptions options = UIViewAnimationOptionCurveEas
 {
     if ((self = [super init]))
     {
+        _presentWithAnimation = YES;
+        _showBg = YES;
         view = aView;
-        self.backgroundColor = [UIColor colorWithWhite:0.f alpha:0.0f];
+        if (self.showBg) {
+            self.backgroundColor = [UIColor colorWithWhite:0.f alpha:0.0f];
+        }
         _bgView = [UIView new];
         _bgView.backgroundColor = [UIColor colorWithRed:247.f/255.f green:247.f/255.f blue:247.f/255.f alpha:1.0f];
         [self addSubview:_bgView];
@@ -133,6 +141,8 @@ static const enum UIViewAnimationOptions options = UIViewAnimationOptionCurveEas
 {
     // Make sheet window visible and active
     UIWindow *sheetWindow = [self window];
+    SWActionSheetVC *actionSheetVC = (SWActionSheetVC *)sheetWindow.rootViewController;
+    actionSheetVC.presentWithAnimation = self.presentWithAnimation;
     if (![sheetWindow isKeyWindow])
         [sheetWindow makeKeyAndVisible];
     sheetWindow.hidden = NO;
@@ -148,7 +158,9 @@ static const enum UIViewAnimationOptions options = UIViewAnimationOptionCurveEas
     // Present actions
     void (^animations)() = ^{
         self.center = toPoint;
-        self.backgroundColor = [UIColor colorWithWhite:0.f alpha:0.5f];
+        if (self.showBg) {
+            self.backgroundColor = [UIColor colorWithWhite:0.f alpha:0.5f];
+        }
     };
     // Present sheet
     if (animated)
@@ -177,17 +189,17 @@ static const enum UIViewAnimationOptions options = UIViewAnimationOptionCurveEas
         return;
     // Dissmiss previous action sheet if it presented
     if (_actionSheet.presented)
-        [_actionSheet dismissWithClickedButtonIndex:0 animated:YES];
+        [_actionSheet dismissWithClickedButtonIndex:0 animated:self.presentWithAnimation];
     // Remember new action sheet
     _actionSheet = actionSheet;
     // Present new action sheet
-    [self presentActionSheetAnimated:YES];
+    [self presentActionSheetAnimated:self.presentWithAnimation];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self presentActionSheetAnimated:YES];
+    [self presentActionSheetAnimated:self.presentWithAnimation];
 }
 
 - (void)presentActionSheetAnimated:(BOOL)animated

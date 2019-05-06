@@ -66,6 +66,7 @@ static NSString *const kActionTarget = @"buttonActionTarget";
 @property(nonatomic, assign) int borderWidth;
 @property(nonatomic, strong) UIToolbar *toolbar;
 @property(nonatomic, copy) NSString *title;
+@property(nonatomic, strong) UISegmentedControl *segmentedControl;
 @property(nonatomic, strong) UIView *pickerView;
 @property(nonatomic, readonly) CGSize viewSize;
 @property(nonatomic, strong) NSMutableArray *customButtons;
@@ -82,7 +83,8 @@ static NSString *const kActionTarget = @"buttonActionTarget";
 @property(nonatomic) UIInterfaceOrientationMask supportedInterfaceOrientations; // You can set your own supportedInterfaceOrientations value to prevent dismissing picker in some special cases.
 @property(nonatomic) TapAction tapDismissAction; // Specify, which action should be fired in case of tapping outside of the picker (on top darkened side). Default is TapActionNone.
 @property(nonatomic) BOOL popoverDisabled; // Disable popover behavior on iPad
-
+@property(nonatomic) BOOL presentWithAnimation;
+@property(nonatomic) BOOL showBg;
 
 - (void)setTextColor:(UIColor *)textColor;
 
@@ -121,5 +123,7 @@ static NSString *const kActionTarget = @"buttonActionTarget";
 
 // Hide picker programmatically
 - (void)hidePickerWithCancelAction;
+
+- (void)dismissPicker;
 
 @end

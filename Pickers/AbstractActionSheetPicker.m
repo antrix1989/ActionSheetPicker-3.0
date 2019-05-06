@@ -135,6 +135,8 @@ CG_INLINE BOOL isIPhone4() {
         self.presentFromRect = CGRectZero;
         self.popoverBackgroundViewClass = nil;
         self.popoverDisabled = NO;
+        _presentWithAnimation = YES;
+        _showBg = YES;
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "UnavailableInDeploymentTarget"
@@ -242,7 +244,8 @@ CG_INLINE BOOL isIPhone4() {
     if (isIPhone4()) {
         masterView.backgroundColor = [UIColor colorWithRed:0.97 green:0.97 blue:0.97 alpha:1.0];
     }
-    self.toolbar = [self createPickerToolbarWithTitle:self.title];
+    self.toolbar = [self createPickerToolbar];
+    
     [masterView addSubview:self.toolbar];
 
     //ios7 picker draws a darkened alpha-only region on the first and last 8 pixels horizontally, but blurs the rest of its background.  To make the whole popup appear to be edge-to-edge, we have to add blurring to the remaining left and right edges.
@@ -313,15 +316,16 @@ CG_INLINE BOOL isIPhone4() {
     [self dismissPicker];
 }
 
-- (void)dismissPicker {
+- (void)dismissPicker
+{
 #if __IPHONE_4_1 <= __IPHONE_OS_VERSION_MAX_ALLOWED
     if (self.actionSheet)
 #else
         if (self.actionSheet && [self.actionSheet isVisible])
 #endif
-        [_actionSheet dismissWithClickedButtonIndex:0 animated:YES];
-    else if (self.popOverController && self.popOverController.popoverVisible)
-        [_popOverController dismissPopoverAnimated:YES];
+            [_actionSheet dismissWithClickedButtonIndex:0 animated:YES];
+        else if (self.popOverController && self.popOverController.popoverVisible)
+            [_popOverController dismissPopoverAnimated:YES];
     self.actionSheet = nil;
     self.popOverController = nil;
     self.selfReference = nil;
@@ -466,8 +470,7 @@ CG_INLINE BOOL isIPhone4() {
     [self actionPickerCancel:nil];
 }
 
-
-- (UIToolbar *)createPickerToolbarWithTitle:(NSString *)title {
+- (UIToolbar *)createPickerToolbar {
     CGRect frame = CGRectMake(0, 0, self.viewSize.width, 44);
     UIToolbar *pickerToolbar = [[UIToolbar alloc] initWithFrame:frame];
     pickerToolbar.barStyle = (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) ? UIBarStyleDefault : UIBarStyleBlackTranslucent;
@@ -505,11 +508,16 @@ CG_INLINE BOOL isIPhone4() {
 
     UIBarButtonItem *flexSpace = [self createButtonWithType:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     [barItems addObject:flexSpace];
-    if (title) {
+    if (self.segmentedControl) {
+        UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithCustomView:self.segmentedControl];
+        
+        [barItems addObject:item];
+        [barItems addObject:flexSpace];
+    } else if (self.title) {
         UIBarButtonItem *labelButton;
-
-        labelButton = [self createToolbarLabelWithTitle:title titleTextAttributes:self.titleTextAttributes andAttributedTitle:self.attributedTitle];
-
+        
+        labelButton = [self createToolbarLabelWithTitle:self.title titleTextAttributes:self.titleTextAttributes andAttributedTitle:self.attributedTitle];
+        
         [barItems addObject:labelButton];
         [barItems addObject:flexSpace];
     }
@@ -679,6 +687,8 @@ CG_INLINE BOOL isIPhone4() {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRotate:) name:UIApplicationWillChangeStatusBarOrientationNotification object:nil];
 
     _actionSheet = [[SWActionSheet alloc] initWithView:aView];
+    _actionSheet.presentWithAnimation = self.presentWithAnimation;
+    _actionSheet.showBg = self.showBg;
     if (self.pickerBackgroundColor) {
         _actionSheet.bgView.backgroundColor = self.pickerBackgroundColor;
     }
