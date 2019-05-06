@@ -8,6 +8,8 @@
 
 @interface SWActionSheet : UIView
 @property(nonatomic, strong) UIView *bgView;
+@property(nonatomic) BOOL presentWithAnimation;
+@property(nonatomic) BOOL showBg;
 
 - (void)dismissWithClickedButtonIndex:(int)i animated:(BOOL)animated;
 
